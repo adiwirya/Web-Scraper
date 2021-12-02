@@ -4,9 +4,10 @@ import json
 import math
 import pandas as pd
 import os
+import unicodedata
 
 Url ='https://store.weddingku.com/ajax/category-package.asp?url=venue-deals&page=1&txtpricemin=&txtpricemax=&txtpaxmin=&txtpaxmax=&zonaid=&rc=10&type=&sortby=&promo='
-Url2 ='https://store.weddingku.com/wedding-package/venue-deal/wedding-2022-for-150-pax-at-grand-ballroom-jw-marriott-by-pinkbow'
+Url2 ='https://store.weddingku.com//wedding-package//venue-deal//special-all-in-package-for-200-pax-at-harmony-grand-ballroom-by-holiday-inn-suites-jakarta-gajah-mada-by-jwp-wedding'
 def totalresults(url):
     response = requests.get(url)
     data = dict(response.json())
@@ -18,6 +19,29 @@ def get_data(url):
     data = dict(response.json())
     return data['html']   
 
+
+def get_url(data):
+    print('Parsing data...')
+    paketlist = []
+    soup = BeautifulSoup(data, 'lxml')
+    pakets = soup.find_all('div', class_='col-xl-25 col-md-25 col-6 px-2 my-2')
+
+    for paket in pakets:
+        url = paket.find('a')['href']
+        image = paket.find('div',class_='ico-bundle')
+        print(image)
+        if(image != None):
+            mypaket ={ 
+                'url': url,
+                }
+        else:
+            mypaket ={ 
+                'url': '',
+                }
+        
+        paketlist.append(mypaket)
+        # print("Done")
+    return paketlist
 
 def parse(data):
     print('Parsing data...')
@@ -74,9 +98,85 @@ def get_data_detail(url):
         except:
             jumlahTamu = ''
         try:
-            detailPaket = soup.find('label', text='INCLUSIONS').find_next('div').text.strip()
+            detailPaket = soup.find('label', text='INCLUSIONS').find_next('div')
         except:
             detailPaket = ''
+        soup2 = BeautifulSoup(str(detailPaket), 'lxml')
+        b = soup2.find_all('b')
+        ul = soup2.find('ul')
+
+
+
+
+        text1 = 'Master of Ceremony'
+        text2 = 'Wedding Car'
+        text3 = 'Photographers'
+        text4 = 'Videographers'
+        text5 = 'Crew'
+        text6 = 'Wedding Cake'
+        text7 = 'Singer'
+        text8 = 'Instruments'
+        text9 = 'Make Up Artist'
+        text10 = 'Pax'
+        try:
+            MC = soup2.find(lambda tag: tag.name == "li" and text1 in tag.text).text
+        except:
+            MC = '0'
+        try:
+            WD = soup2.find(lambda tag: tag.name == "li" and text2 in tag.text).text
+        except:
+            WD = '0'
+        try:
+            PH = soup2.find(lambda tag: tag.name == "li" and text3 in tag.text).text
+        except:
+            PH = '0'
+        try:
+            VD = soup2.find(lambda tag: tag.name == "li" and text4 in tag.text).text
+        except:
+            VD = '0'
+        try:
+            C = soup2.find(lambda tag: tag.name == "li" and text5 in tag.text).text
+        except:
+            C = '0'
+        try:
+            CK = soup2.find(lambda tag: tag.name == "li" and text6 in tag.text).text
+        except:
+            CK = '0'
+        try:
+            S = soup2.find(lambda tag: tag.name == "li" and text7 in tag.text).text
+        except:
+            S = '0'
+        try:
+            Ins = soup2.find(lambda tag: tag.name == "li" and text8 in tag.text).text
+        except:
+            Ins = '0'
+        try:
+            MUA = soup2.find(lambda tag: tag.name == "li" and text9 in tag.text).text
+        except:
+            MUA = '0'        
+        try:
+            Pax = soup2.find(lambda tag: tag.name == "li" and text10 in tag.text).text
+        except:
+            Pax = '0'
+
+        
+        print("{namaPaket}\n---------------------------\nMC = {MC}\nCar = {WD}\nPhoto = {PH}\nVideo = {VD}\nCrew = {C}\nCake = {CK}\nSing = {S}\nIns = {Ins}\nMUA = {MUA}\nPax = {Pax}\n---------------------------\n".format(MC=MC,WD=WD,PH=PH,VD=VD,C=C,CK=CK,S=S,Ins=Ins,MUA=MUA,namaPaket=namaPaket,Pax=Pax))
+        # bs =  detailPaket.find_all('b')
+
+        # for i in range(len(bs)):
+        #     b = detailPaket.find('b')
+        #     ul = detailPaket.find('ul')
+           
+                        
+            # nData = unicodedata.normalize('NFKD', str(bs[i].text)).encode('ASCII', 'ignore')
+            # bs[i] = nData.decode('utf-8')
+        
+        # for i in range(len(uls)):
+        #     nData = unicodedata.normalize('NFKD', str(uls[i].text)).encode('ASCII', 'ignore')
+        #     uls[i] = nData.decode('utf-8')
+        
+        
+        detailPaket = detailPaket.text.strip()
         mypaket = {
             'url': url,
             'namaPaket': namaPaket,
@@ -85,9 +185,19 @@ def get_data_detail(url):
             'lokasi': lokasi,
             'jumlahTamu': jumlahTamu,
             'image': image,
-            'detailPaket': detailPaket
+            'MC':MC,
+            'WD':WD,
+            'PH':PH,
+            'VD':VD,
+            'C':C,
+            'CK':CK,
+            'S':S,
+            'Ins':Ins,
+            'MUA':MUA,
+            'Pax':Pax,
+            'detailPaket':detailPaket,
         }
-        print(mypaket)
+
         return mypaket
     else:
         mypaket = {
@@ -98,14 +208,22 @@ def get_data_detail(url):
             'lokasi': '',
             'jumlahTamu': '',
             'image': '',
+            'MC':'',
+            'WD':'',
+            'PH':'',
+            'VD':'',
+            'C':'',
+            'CK':'',
+            'S':'',
+            'Ins':'',
+            'MUA':'',
+            'Pax':'',
             'detailPaket': ''
         }
-        print(mypaket)
         return mypaket
 
 # get_data_detail(Url2)
 
-    
 results = []
 last = totalresults(Url)
 print("Scraping data...")
