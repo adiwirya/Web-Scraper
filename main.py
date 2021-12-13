@@ -113,17 +113,22 @@ def get_data_detail(url):
         text3 = 'Photographers'
         text4 = 'Videographers'
         text5 = 'Crew'
-        text6 = 'Wedding Cake'
+        text6 = 'Cake'
         text7 = 'Singer'
         text8 = 'Instruments'
         text9 = 'Make Up Artist'
         text10 = 'Pax'
+        text11 = 'Stage'
+        text12 = 'Gate'
+        text13 = 'Table Decoration'
+        text14 = 'Groom'
+        text15 = 'Bride'
         try:
             MC = soup2.find(lambda tag: tag.name == "li" and text1 in tag.text).text
         except:
             MC = '0'
         try:
-            WD = soup2.find(lambda tag: tag.name == "li" and text2 in tag.text).text
+            WD = soup2.find(text=text2).text
         except:
             WD = '0'
         try:
@@ -158,6 +163,35 @@ def get_data_detail(url):
             Pax = soup2.find(lambda tag: tag.name == "li" and text10 in tag.text).text
         except:
             Pax = '0'
+            if(Pax == '0'):
+                text10 = 'persons'
+                try:
+                    Pax = soup2.find(lambda tag: tag.name == "li" and text10 in tag.text).text
+                except:
+                    Pax = '0'
+            
+        try:
+            WS = soup2.find(lambda tag: tag.name == "li" and text11 in tag.text).text
+        except:
+            WS = '0'
+        try:
+            WG = soup2.find(lambda tag: tag.name == "li" and text12 in tag.text).text
+        except:
+            WG = '0'
+        try:
+            BT = soup2.find(lambda tag: tag.name == "li" and text13 in tag.text).text
+        except:
+            BT = '0'
+        try:
+            G = soup2.find(lambda tag: tag.name == "span" and text14 in tag.text).text
+        except:
+            G = '0'
+        try:
+            B = soup2.find(lambda tag: tag.name == "span" and text15 in tag.text).text
+        except:
+            B = '0'
+        
+
 
         
         print("{namaPaket}\n---------------------------\nMC = {MC}\nCar = {WD}\nPhoto = {PH}\nVideo = {VD}\nCrew = {C}\nCake = {CK}\nSing = {S}\nIns = {Ins}\nMUA = {MUA}\nPax = {Pax}\n---------------------------\n".format(MC=MC,WD=WD,PH=PH,VD=VD,C=C,CK=CK,S=S,Ins=Ins,MUA=MUA,namaPaket=namaPaket,Pax=Pax))
@@ -186,15 +220,20 @@ def get_data_detail(url):
             'jumlahTamu': jumlahTamu,
             'image': image,
             'MC':MC,
-            'WD':WD,
-            'PH':PH,
-            'VD':VD,
-            'C':C,
-            'CK':CK,
-            'S':S,
+            'Wedding Car':WD,
+            'Photographers':PH,
+            'Videographers':VD,
+            'Crew':C,
+            'Cake':CK,
+            'Singer':S,
             'Ins':Ins,
             'MUA':MUA,
             'Pax':Pax,
+            'Wedding Stage' : WS,
+            'Wedding Gate' : WG,
+            'Bridal Table Decoration' : BT,
+            'Groom' : G,
+            'Bride' : B,
             'detailPaket':detailPaket,
         }
 
@@ -209,15 +248,20 @@ def get_data_detail(url):
             'jumlahTamu': '',
             'image': '',
             'MC':'',
-            'WD':'',
-            'PH':'',
-            'VD':'',
-            'C':'',
-            'CK':'',
-            'S':'',
+            'Wedding Car':'',
+            'Photographers':'',
+            'Videographers':'',
+            'Crew':'',
+            'Cake':'',
+            'Singer':'',
             'Ins':'',
             'MUA':'',
             'Pax':'',
+            'Wedding Stage' : '',
+            'Wedding Gate' : '',
+            'Bridal Table Decoration' : '',
+            'Groom' : '',
+            'Bride' : '',
             'detailPaket': ''
         }
         return mypaket
